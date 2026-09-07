@@ -607,13 +607,15 @@ class DtypeObservation(
         elif isinstance(env.observation_space, spaces.Discrete):
             new_observation_space = spaces.Box(
                 low=env.observation_space.start,
-                high=env.observation_space.start + env.observation_space.n,
+                high=env.observation_space.start + env.observation_space.n - 1,
                 shape=(),
                 dtype=self.dtype,
             )
         elif isinstance(env.observation_space, spaces.MultiDiscrete):
             new_observation_space = spaces.MultiDiscrete(
-                env.observation_space.nvec, dtype=dtype
+                env.observation_space.nvec,
+                dtype=dtype,
+                start=env.observation_space.start,
             )
         elif isinstance(env.observation_space, spaces.MultiBinary):
             new_observation_space = spaces.Box(
