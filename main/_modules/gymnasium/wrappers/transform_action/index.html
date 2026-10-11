@@ -14,11 +14,13 @@
         <title>gymnasium.wrappers.transform_action - Gymnasium Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/celshast.css?v=9fbfb63d" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/celshast-extensions.css?v=42bfddca" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/copybutton.css?v=a6a596f6" />
     
     
 
@@ -248,6 +250,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../api/utils/">Utility functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/typing/">Typing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../api/functional/">Functional Env</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Environments</span></p>
@@ -606,7 +609,7 @@
 <span class="sd">        &gt;&gt;&gt; obs, *_ = env.step([-0.3, -0.5])</span>
 <span class="sd">        &gt;&gt;&gt; obs</span>
 <span class="sd">        array([ 0.99908342,  0.99948506,  0.04280567, -0.03208766,  0.10445588,</span>
-<span class="sd">                0.11442572, -1.18958125, -1.97979484,  0.1054461 , -0.10896341])</span>
+<span class="sd">                0.11442572, -1.18958125, -1.97979484,  0.10544613, -0.10896536])</span>
 <span class="sd">        &gt;&gt;&gt; env = DiscretizeAction(env, bins=10)</span>
 <span class="sd">        &gt;&gt;&gt; env.action_space</span>
 <span class="sd">        Discrete(100)</span>
@@ -614,7 +617,7 @@
 <span class="sd">        &gt;&gt;&gt; obs, *_ = env.step(32)</span>
 <span class="sd">        &gt;&gt;&gt; obs</span>
 <span class="sd">        array([ 0.99908342,  0.99948506,  0.04280567, -0.03208766,  0.10445588,</span>
-<span class="sd">                0.11442572, -1.18958118, -1.97979484,  0.1054461 , -0.10896341])</span>
+<span class="sd">                0.11442572, -1.18958118, -1.97979484,  0.10544613, -0.10896536])</span>
 
 <span class="sd">    Example 2 - Discretize Reacher action space with MultiDiscrete:</span>
 <span class="sd">        &gt;&gt;&gt; env = gym.make("Reacher-v5")</span>
@@ -624,7 +627,7 @@
 <span class="sd">        &gt;&gt;&gt; obs, *_ = env.step([-0.3, -0.5])</span>
 <span class="sd">        &gt;&gt;&gt; obs</span>
 <span class="sd">        array([ 0.99908342,  0.99948506,  0.04280567, -0.03208766,  0.10445588,</span>
-<span class="sd">                0.11442572, -1.18958125, -1.97979484,  0.1054461 , -0.10896341])</span>
+<span class="sd">                0.11442572, -1.18958125, -1.97979484,  0.10544613, -0.10896536])</span>
 <span class="sd">        &gt;&gt;&gt; env = DiscretizeAction(env, bins=10, multidiscrete=True)</span>
 <span class="sd">        &gt;&gt;&gt; env.action_space</span>
 <span class="sd">        MultiDiscrete([10 10])</span>
@@ -632,7 +635,7 @@
 <span class="sd">        &gt;&gt;&gt; obs, *_ = env.step([3, 2])</span>
 <span class="sd">        &gt;&gt;&gt; obs</span>
 <span class="sd">        array([ 0.99908342,  0.99948506,  0.04280567, -0.03208766,  0.10445588,</span>
-<span class="sd">                0.11442572, -1.18958118, -1.97979484,  0.1054461 , -0.10896341])</span>
+<span class="sd">                0.11442572, -1.18958118, -1.97979484,  0.10544613, -0.10896536])</span>
 <span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -653,9 +656,9 @@
                 <span class="s2">"DiscretizeAction is only compatible with Box continuous actions."</span>
             <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">low</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">low</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">high</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">high</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">low</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">low</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">low</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">high</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">high</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">low</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">low</span><span class="p">))</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">high</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -702,10 +705,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">bin_centers</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">bins</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
         <span class="p">]</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">centers</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">centers</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">action_space</span><span class="o">.</span><span class="n">shape</span>
+        <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">revert_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Converts a discretized action to a possible continuous action (the center of the closest bin)."""</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
         <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_centers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">action</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_dims</span><span class="p">)</span>
@@ -842,6 +848,8 @@
     <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/scripts/celshast.js?v=a788a8c6"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=ccdb6887"></script>
     
     <script>
 

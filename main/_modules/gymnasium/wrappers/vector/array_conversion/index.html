@@ -14,11 +14,13 @@
         <title>gymnasium.wrappers.vector.array_conversion - Gymnasium Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/celshast.css?v=9fbfb63d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/celshast-extensions.css?v=42bfddca" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/css/copybutton.css?v=a6a596f6" />
     
     
 
@@ -248,6 +250,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../api/utils/">Utility functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/typing/">Typing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../api/functional/">Functional Env</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Environments</span></p>
@@ -375,9 +378,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">gymnasium</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gym</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gymnasium.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">ActType</span><span class="p">,</span> <span class="n">ObsType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gymnasium.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">ActType</span><span class="p">,</span> <span class="n">ObsType</span><span class="p">,</span> <span class="n">WrapperActType</span><span class="p">,</span> <span class="n">WrapperObsType</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gymnasium.vector</span><span class="w"> </span><span class="kn">import</span> <span class="n">VectorEnv</span><span class="p">,</span> <span class="n">VectorWrapper</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">gymnasium.vector.vector_env</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayType</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gymnasium.wrappers.array_conversion</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Device</span><span class="p">,</span>
     <span class="n">array_conversion</span><span class="p">,</span>
@@ -389,7 +391,11 @@
 
 <div class="viewcode-block" id="ArrayConversion">
 <a class="viewcode-back" href="../../../../../api/vector/wrappers/#gymnasium.wrappers.vector.ArrayConversion">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">ArrayConversion</span><span class="p">(</span><span class="n">VectorWrapper</span><span class="p">,</span> <span class="n">gym</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">RecordConstructorArgs</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ArrayConversion</span><span class="p">(</span>
+    <span class="c1"># The reward and termination/truncation arrays are converted too, so they're typed as `Any`</span>
+    <span class="n">VectorWrapper</span><span class="p">[</span><span class="n">WrapperObsType</span><span class="p">,</span> <span class="n">WrapperActType</span><span class="p">,</span> <span class="n">ObsType</span><span class="p">,</span> <span class="n">ActType</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">gym</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">RecordConstructorArgs</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Wraps a vector environment returning Array API compatible arrays so that it can be interacted with through a specific framework.</span>
 
 <span class="sd">    Popular Array API frameworks include ``numpy``, ``torch``, ``jax.numpy``, ``cupy`` etc. With this wrapper, you can convert outputs from your environment to</span>
@@ -407,7 +413,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">env</span><span class="p">:</span> <span class="n">VectorEnv</span><span class="p">,</span>
+        <span class="n">env</span><span class="p">:</span> <span class="n">VectorEnv</span><span class="p">[</span><span class="n">ObsType</span><span class="p">,</span> <span class="n">ActType</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">env_xp</span><span class="p">:</span> <span class="n">ModuleType</span><span class="p">,</span>
         <span class="n">target_xp</span><span class="p">:</span> <span class="n">ModuleType</span><span class="p">,</span>
         <span class="n">env_device</span><span class="p">:</span> <span class="n">Device</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -430,8 +436,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_target_device</span> <span class="o">=</span> <span class="n">target_device</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">step</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">:</span> <span class="n">ActType</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">ObsType</span><span class="p">,</span> <span class="n">ArrayType</span><span class="p">,</span> <span class="n">ArrayType</span><span class="p">,</span> <span class="n">ArrayType</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">:</span> <span class="n">WrapperActType</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">WrapperObsType</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">"""Transforms the action to the specified xp module array type.</span>
 
 <span class="sd">        Args:</span>
@@ -440,8 +446,10 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            A tuple containing xp versions of the next observation, reward, termination, truncation, and extra info.</span>
 <span class="sd">        """</span>
-        <span class="n">actions</span> <span class="o">=</span> <span class="n">array_conversion</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="n">xp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_env_xp</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_env_device</span><span class="p">)</span>
-        <span class="n">obs</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">terminated</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span>
+        <span class="n">env_actions</span> <span class="o">=</span> <span class="n">array_conversion</span><span class="p">(</span>
+            <span class="n">actions</span><span class="p">,</span> <span class="n">xp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_env_xp</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_env_device</span>
+        <span class="p">)</span>
+        <span class="n">obs</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">terminated</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">env_actions</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">array_conversion</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">xp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_target_xp</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_target_device</span><span class="p">),</span>
@@ -458,7 +466,7 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">ObsType</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">WrapperObsType</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">"""Resets the environment returning xp-based observation and info.</span>
 
 <span class="sd">        Args:</span>
@@ -622,6 +630,8 @@
     <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/scripts/celshast.js?v=a788a8c6"></script>
+    <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../../_static/copybutton.js?v=ccdb6887"></script>
     
     <script>
 

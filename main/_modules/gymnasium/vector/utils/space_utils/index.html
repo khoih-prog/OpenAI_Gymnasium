@@ -14,11 +14,13 @@
         <title>gymnasium.vector.utils.space_utils - Gymnasium Documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/celshast.css?v=9fbfb63d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sg_gallery.css?v=61a4c737" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/celshast-extensions.css?v=42bfddca" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/css/copybutton.css?v=a6a596f6" />
     
     
 
@@ -248,6 +250,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../api/utils/">Utility functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../api/typing/">Typing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../api/functional/">Functional Env</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Environments</span></p>
@@ -403,7 +406,7 @@
 <span class="p">)</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Never</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Never</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">"batch_space"</span><span class="p">,</span>
@@ -533,6 +536,10 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        A batched space</span>
 
+<span class="sd">    For Discrete spaces, dtypes are promoted to a common integer dtype that can</span>
+<span class="sd">    represent the full range of each input dtype. Combinations without such a</span>
+<span class="sd">    dtype, including uint64 mixed with a signed integer dtype, raise ValueError.</span>
+
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; from gymnasium.spaces import Discrete</span>
 <span class="sd">        &gt;&gt;&gt; spaces = [Discrete(3), Discrete(5), Discrete(4), Discrete(8)]</span>
@@ -578,14 +585,16 @@
 
 <span class="nd">@batch_differing_spaces</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Discrete</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">_batch_differing_spaces_discrete</span><span class="p">(</span><span class="n">spaces</span><span class="p">:</span> <span class="n">_PySequence</span><span class="p">[</span><span class="n">Discrete</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">MultiDiscrete</span><span class="p">:</span>
-    <span class="c1"># select the "largest" to fit others.</span>
-    <span class="c1"># Assumes all spaces dtype are of int dtype</span>
     <span class="n">dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">space</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">space</span> <span class="ow">in</span> <span class="n">spaces</span><span class="p">]</span>
-    <span class="n">largest</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">dtypes</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">dt</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span><span class="o">.</span><span class="n">itemsize</span><span class="p">)</span>
+    <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">dtypes</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Cannot batch Discrete spaces with dtypes </span><span class="si">{</span><span class="n">dtypes</span><span class="si">}</span><span class="s2">: no common integer dtype."</span>
+        <span class="p">)</span>
     <span class="k">return</span> <span class="n">MultiDiscrete</span><span class="p">(</span>
-        <span class="n">nvec</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">space</span><span class="o">.</span><span class="n">n</span> <span class="k">for</span> <span class="n">space</span> <span class="ow">in</span> <span class="n">spaces</span><span class="p">]),</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">largest</span><span class="p">,</span>
-        <span class="n">start</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">space</span><span class="o">.</span><span class="n">start</span> <span class="k">for</span> <span class="n">space</span> <span class="ow">in</span> <span class="n">spaces</span><span class="p">]),</span>
+        <span class="n">nvec</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">space</span><span class="o">.</span><span class="n">n</span> <span class="k">for</span> <span class="n">space</span> <span class="ow">in</span> <span class="n">spaces</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">),</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">start</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">space</span><span class="o">.</span><span class="n">start</span> <span class="k">for</span> <span class="n">space</span> <span class="ow">in</span> <span class="n">spaces</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">),</span>
         <span class="n">seed</span><span class="o">=</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">spaces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">np_random</span><span class="p">),</span>
     <span class="p">)</span>
 
@@ -1076,6 +1085,8 @@
     <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/scripts/celshast.js?v=a788a8c6"></script>
+    <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../../_static/copybutton.js?v=ccdb6887"></script>
     
     <script>
 
